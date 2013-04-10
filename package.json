@@ -1,0 +1,28 @@
+{
+  "author": "Pierce Moore <Pierce@PierceMoore.com>",
+  "name": "rex-compiler",
+  "description": "Efficiently and quickly compiles all the template files in a directory into an output file using your favorite microtemplating framework.",
+  "version": "0.0.1",
+  "main": "./rex-template.js",
+  "bin": "./rex-template.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/piercemoore/rex-template.git"
+  },
+  "keywords": [
+    "handlebars",
+    "compile",
+    "template"
+  ],
+  "license": "BSD",
+  "readmeFilename": "readme.md",
+  "dependencies": {
+    "handlebars": "*",
+    "uglify-js": "*",
+    "optimist": "*",
+    "supercli": "*",
+    "underscore": "*",
+    "async": "*",
+    "node-watch": "*"
+  }
+}
