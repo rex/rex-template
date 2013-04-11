@@ -2,7 +2,7 @@
   "author": "Pierce Moore <Pierce@PierceMoore.com>",
   "name": "rex-template",
   "description": "Efficiently and quickly compiles all the template files in a directory into an output file using your favorite microtemplating framework.",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "main": "./rex-template.js",
   "bin": "./rex-template.js",
   "repository": {
