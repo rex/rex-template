@@ -1,5 +1,6 @@
 #!/usr/bin/env node 
 
+
 var optimist = require('optimist')
   , handlebars = require('handlebars')
   , uglify = require('uglify-js')
@@ -84,7 +85,7 @@ _.extend(config, {
   help : optimist.help()
 })
 
-scli.config.appName("Rex-Compiler")
+scli.config.appName("Rex-Template")
 
 var help = function appHelp() {
   scli(config.help)
@@ -205,7 +206,11 @@ Miyagi.on('read:folder', function readFolder(folder, namespace) {
           // Is our file a template we care about?
           if(_.contains(config.extensions, path.extname(file))) {
             Miyagi.emit('read:file', file, namespace, stats)
+          } else {
+            done()
           }
+        } else {
+          done()
         }
         fileProcessed()
       })
