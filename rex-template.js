@@ -175,8 +175,11 @@ var prepareFile = function signFile(output) {
 }
 
 var init = function appInit() {
-  if(!fs.existsSync( path.resolve(app.infile) ) )
-    throw "Input folder '" + app.infile + "' does not exist!"
+  if(!fs.existsSync( path.resolve(app.infile) ) ) {
+    scli.error("Input folder '" + app.infile + "' does not exist!")
+    process.exit(1)
+  }
+
   if(app.watch)
     Miyagi.emit('app:watch')
   /**
