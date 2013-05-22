@@ -1,0 +1,42 @@
+{
+  "name": "rex-template",
+  "version": "1.0.0",
+  "dependencies": {
+    "handlebars": {
+      "version": "1.0.10",
+      "from": "handlebars@*",
+      "dependencies": {
+        "uglify-js": {
+          "version": "1.2.6",
+          "from": "uglify-js@~1.2"
+        }
+      }
+    },
+    "optimist": {
+      "version": "0.3.7",
+      "from": "optimist@*",
+      "dependencies": {
+        "wordwrap": {
+          "version": "0.0.2",
+          "from": "wordwrap@~0.0.2"
+        }
+      }
+    },
+    "supercli": {
+      "version": "0.1.22",
+      "from": "supercli@*"
+    },
+    "underscore": {
+      "version": "1.4.4",
+      "from": "underscore@*"
+    },
+    "async": {
+      "version": "0.2.7",
+      "from": "async@*"
+    },
+    "node-watch": {
+      "version": "0.3.2",
+      "from": "node-watch@*"
+    }
+  }
+}
