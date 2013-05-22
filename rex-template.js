@@ -77,12 +77,27 @@ if(app.quiet)
   scli.config.hideName()
 
 if(argv.help) {
+  scli.$.BLUE("Hi, I'm Rex-Template. I'm here to make your life easier.")
+  scli.$.blue("  What is this? " + scli.$$.y(__cfg__.description) )
+  scli.$.blue("  I'm stuck and need help. " + scli.$$.y(__cfg__.author))
+  scli.$.blue("  GitHub repo? " + scli.$$.y(__cfg__.homepage))
+  scli.$.blue("  Command what?")
+  scli.$.GREEN("     rex-template \t" + scli.$$.y(" - Compiles ./public/js/templates into ./public/js/templates.js."))
+  scli.$.GREEN("     rex-template -w \t" + scli.$$.y(" - Compiles the folder of templates and and watches the folder for changes."))
+  scli.$.GREEN("     rex-template -q \t" + scli.$$.y(" - Compiles the folder of templates and reduces the text logged to the console."))
+  scli.$.GREEN("     rex-template -i './other/templates/folder/' -o './js/folder/templates.js' -wq \t" + scli.$$.y(" - Changes the input/output paths, reduces console logging, and watches for changes."))
+   
+
   console.log(optimist.help())
   process.exit(0)
 }
 
 if(argv.version) {
-  scli("Current Rex-Template Version: " + app.version );
+  scli.$.blue("Rex-Template Version Tree: ")
+  scli.$.blue("\t Rex-Template: \t [ " + scli.$$.r( app.version ) + " ]")
+  scli.$.blue("\t Handlebars: \t [ " + scli.$$.r( handlebars.VERSION ) + " ]")
+  scli.$.blue("\t Node.js: \t [ " + scli.$$.r( process.versions.node ) + " ]")
+  scli.$.blue("\t V8 (Engine): \t [ " + scli.$$.r( process.versions.v8 ) + " ]")
   process.exit(0) 
 }
 

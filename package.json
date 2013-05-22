@@ -1,7 +1,7 @@
 {
   "author": "Pierce Moore <me@prex.io>",
   "name": "rex-template",
-  "description": "Efficiently and quickly compiles all the template files in a directory into an output file using your favorite microtemplating framework.",
+  "description": "Rex-Template recursively compiles all of the Handlebars templates in a folder into a single file, watching for changes afterward.",
   "homepage": "https://github.com/rex/rex-template",
   "version": "1.0.2",
   "main": "./rex-template.js",
