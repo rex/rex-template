@@ -1,28 +1,64 @@
 {
-  "author": "Pierce Moore <Pierce@PierceMoore.com>",
+  "author": "Pierce Moore <me@prex.io>",
   "name": "rex-template",
   "description": "Efficiently and quickly compiles all the template files in a directory into an output file using your favorite microtemplating framework.",
-  "version": "0.1.0",
+  "homepage" : "https://github.com/rex/rex-template",
+  "version": "1.0.0",
   "main": "./rex-template.js",
   "bin": "./rex-template.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/piercemoore/rex-template.git"
+    "url": "https://github.com/rex/rex-template.git"
   },
   "keywords": [
     "handlebars",
     "compile",
-    "template"
+    "template",
+    "recursive",
+    "watch",
+    "monitor"
   ],
-  "license": "BSD",
+  "license": "MIT",
   "readmeFilename": "readme.md",
   "dependencies": {
     "handlebars": "*",
-    "uglify-js": "*",
     "optimist": "*",
     "supercli": "*",
     "underscore": "*",
     "async": "*",
     "node-watch": "*"
+  },
+  "app" : {
+    "infile" : "./public/js/templates",
+    "outfile" : "./public/js/templates.js",
+    "extensions" : [".hb",".hbs",".handlebars"],
+    "minify" : true,
+    "watch" : false,
+    "timeout" : 1000,
+    "hb" : {
+      "startString" : "(function() { var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {}; Handlebars.partials = Handlebars.templates; \n",
+      "endString" : "})();"
+    },
+    "tplHeader" : [
+      "\/**",
+      "* Compiled by Rex-Template on {{date}}",
+      "*",
+      "* Total Compiles : {{iteration}}",
+      "* Templates : {{templateCount}}",
+      "* Compile Time : {{compileTime}}",
+      "* Skipped Templates: {{skipped}}",
+      "* Compile Errors: {{compileErrors}}",
+      "* Compile Time Rex-Template has Saved You: {{timeSaved}} seconds",
+      "*",
+      "* About Rex-Template:",
+      "* \t Version : {{version}}",
+      "* \t Input File : {{infile}}",
+      "* \t Output File : {{outfile}}",
+      "* \t Extensions Handled : {{extensions}}",
+      "* \t Duplicate Prevention Timeout : {{timeout}}",
+      "*",
+      "* Having issues? Send an email to me@prex.io or open an issue here: https://github.com/rex/rex-template/issues",
+      "*\/ \n"
+    ]
   }
 }

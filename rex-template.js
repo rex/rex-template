@@ -1,9 +1,7 @@
 #!/usr/bin/env node 
 
-
 var optimist = require('optimist')
   , handlebars = require('handlebars')
-  , uglify = require('uglify-js')
   , fs = require('fs')
   , path = require('path')
   , scli = require('supercli')
@@ -12,64 +10,52 @@ var optimist = require('optimist')
   , async = require('async')
   , EventEmitter = require('events').EventEmitter
   , Miyagi = new EventEmitter()
-  , config = {
-      infile : "./public/js/templates",
-      outfile : "./public/js/templates.js",
-      extensions : [".hb",".hbs",".handlebars"],
-      engine : "handlebars",
-      minify : true,
-      watch : false,
-      timeout : 5000,
-      hb : {
-        startString : '(function() { var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {}; Handlebars.partials = Handlebars.templates; \n',
-        endString : '})();'
-      },
-      tplHeader : '\/** \n \
- * Compiled by Rex-Compiler on {{date}} \n \
- * \n \
- * Templates : {{templateCount}} \n \
- * Compile Time : {{compileTime}} \n \
- * Unmodified Templates Skipped : {{skippedTemplates}} \n \
- *\/ \n '
-    }
+  , __cfg__ = require('./package.json')
+  , __version__ = require('./package.json').version
+  , app = require('./package.json').app
   , compiled = {}
   , count = 0
   , remaining = 0
   , skipped = 0
+  , iteration = 1
   , startTime = 0
   , elapsedTime = 0
+  , timeSaved = 0.0
   , lastCompileTime = new Date().getTime()
   , argv = require('optimist')
-    .usage('Efficiently and quickly compiles all the template files in a directory into an output file using your favorite microtemplating framework.')
+    .usage(app.description)
     
     .alias('h', 'help')
     .describe('h', 'Show this usage information')
     .default('h', false)
     .boolean('h')
 
-    .demand('i')
     .alias('i', 'in')
-    .describe('i', 'Input directory, where template files are kept')
-    .default('i', config.infile)
+    .describe('i', 'Folder of templates to compile')
+    .default('i', app.infile)
     
-    .demand('o')
     .alias('o', 'out')
-    .describe('o', 'Output file which will contain the compiled templates')
-    .default('o', config.outfile)
+    .describe('o', 'Compiled output file')
+    .default('o', app.outfile)
 
     .alias('m', 'minify')
-    .describe('m', 'If true, Rex-Compiler will cut out unnecessary whitespace, remove comments, and minify the file.')
-    .default('m', config.minify)
+    .describe('m', 'Remove extra comments and whitespace')
+    .default('m', app.minify)
     .boolean('m')
 
     .alias('w', 'watch')
-    .describe('w', 'Have Rex-Compiler stay alive and monitor the input folder for changes, recompiling as they happen.')
-    .default('w', config.watch)
+    .describe('w', 'Monitor the input folder for changes')
+    .default('w', app.watch)
     .boolean('w')
 
-    // .alias('e', 'extension')
-    // .describe('e', 'Have Rex-Compiler compile additional file extensions, one per -e flag.')
-    // .default('e', config.extensions)
+    .alias('v', 'version')
+    .describe('v', 'Display the current version number.')
+    .boolean('v')
+
+    .alias('q', 'quiet')
+    .describe('q', 'Reduce console output')
+    .default('q', false)
+    .boolean('q')
 
     .argv
   ;
@@ -77,22 +63,28 @@ var optimist = require('optimist')
 /**
  * Bootstrap the application with CLI flags
  */
-_.extend(config, {
+app.version = __cfg__.version
+_.extend(app, {
   infile : argv.in,
   outfile : argv.out,
   minify : argv.minify,
   watch : argv.watch,
-  help : optimist.help()
+  quiet : argv.quiet
 })
-
+  
 scli.config.appName("Rex-Template")
+if(app.quiet)
+  scli.config.hideName()
 
-var help = function appHelp() {
-  scli(config.help)
+if(argv.help) {
+  console.log(optimist.help())
+  process.exit(0)
 }
 
-if(argv.help)
-  help()
+if(argv.version) {
+  scli("Current Rex-Template Version: " + app.version );
+  process.exit(0) 
+}
 
 var error = function appError(err, line) {
   scli.error(err, line)
@@ -100,11 +92,11 @@ var error = function appError(err, line) {
 
 var preProcessCheck = function() {
   var newTime = new Date().getTime()
-  if(parseInt( newTime - lastCompileTime) >= 3000) {
+  if(parseInt( newTime - lastCompileTime) >= app.timeout ) {
     startTime = new Date().getTime()
     count = skipped = remaining = 0
     lastCompileTime = newTime
-    app()
+    run()
   } else {
     scli.error("Duplicate compile detected! Difference of " + parseFloat( ( newTime - lastCompileTime ) / 1000) + " seconds")
     return false
@@ -122,11 +114,17 @@ var noRecentChanges = function(tpl, filesystemLastModified) {
 }
 
 var precompile = function(data) {
-  data = data || ""
-  if(data == "")
-    return ""
-  else
-    return handlebars.precompile( data, {})
+  try {
+    data = data || ""
+    if(data == "")
+      return ""
+    else
+      return handlebars.precompile( data, {})
+  } catch(err) {
+    scli.error(err);
+    compileErrors++
+    return "";
+  }
 }
 
 var addWorkers = function addWorkers(num) {
@@ -155,37 +153,50 @@ var clean = function cleanOutput(output) {
 var prepareFile = function signFile(output) {
   var now = new Date()
   elapsedTime = compileTime(startTime, now.getTime() )
+
+  timeSaved += parseFloat( ( ( now.getTime() - startTime ) * skipped ) / 1000 )
+
   // Replace all placeholders in output file with appropriate data
-  config.tplHeader = config.tplHeader.replace("{{date}}", now.toLocaleString() )
-        .replace("{{templateCount}}", _.size(compiled))
-        .replace("{{compileTime}}", elapsedTime)
-        .replace("{{skippedTemplates}}", skipped)
-  return config.tplHeader + output
+  var tplHeader = handlebars.compile( app.tplHeader.join(" \n") )({
+    date : now.toLocaleString(),
+    templateCount : _.size(compiled),
+    compileTime : elapsedTime,
+    version : app.version,
+    infile : app.infile,
+    outfile : app.outfile,
+    extensions : app.extensions.join(", "),
+    timeout : app.timeout,
+    iteration : iteration,
+    skipped : skipped,
+    timeSaved : timeSaved,
+    compileErrors : compileErrors
+  })
+  return tplHeader + output
 }
 
 var init = function appInit() {
-  if(!fs.existsSync( path.resolve(config.infile) ) )
-    throw "Input folder '" + config.infile + "' does not exist!"
-  if(config.watch)
+  if(!fs.existsSync( path.resolve(app.infile) ) )
+    throw "Input folder '" + app.infile + "' does not exist!"
+  if(app.watch)
     Miyagi.emit('app:watch')
   /**
    * And away we go! :D
    */
-  app()
+  run()
 }
 
-var app = function RexCompiler() {
-  count = remaining = skipped = 0
+var run = function RexCompiler() {
+  count = remaining = skipped = compileErrors = 0
   lastCompileTime = new Date().getTime()
   startTime = new Date().getTime()
   Miyagi.once('app:cleanup', appCleanup)
-  Miyagi.emit('read:folder', path.resolve(config.infile))
+  Miyagi.emit('read:folder', path.resolve(app.infile))
 }
 
 Miyagi.once('app:watch', function() {
-  watch(config.infile, function(file) {
+  watch(app.infile, function(file) {
+    scli("File change detected: " + file)
     preProcessCheck()
-    // scli("File change detected: " + file)
   })
 })
 
@@ -200,11 +211,10 @@ Miyagi.on('read:folder', function readFolder(folder, namespace) {
       fs.stat(fp, function(err, stats) {
         namespace = namespace || ""
         if(stats && stats.isDirectory()) {
-          ns = namespace + file + "/"
-          Miyagi.emit('read:folder', folder + path.sep + file, ns)
+          Miyagi.emit('read:folder', folder + path.sep + file, namespace + file + "/" )
         } else if(stats && stats.isFile()) {
           // Is our file a template we care about?
-          if(_.contains(config.extensions, path.extname(file))) {
+          if(_.contains(app.extensions, path.extname(file))) {
             Miyagi.emit('read:file', file, namespace, stats)
           } else {
             done()
@@ -231,7 +241,7 @@ Miyagi.on('read:file', function readFile(file, namespace, stats) {
     done()
     return false
   } else {
-    fs.readFile(path.resolve(config.infile + path.sep + name), 'utf8', function readInFile(err, fileContents) {
+    fs.readFile(path.resolve(app.infile + path.sep + name), 'utf8', function readInFile(err, fileContents) {
       if(err)
         throw err
       compiled[tpl] = {
@@ -246,17 +256,29 @@ Miyagi.on('read:file', function readFile(file, namespace, stats) {
 })
 
 var appCleanup = function appCleanup() {
-  var output = config.hb.startString
+  var output = app.hb.startString
   _.each(compiled, function(tpl) {
     output += 'templates[\'' + tpl.name + '\'] = template(' + tpl.template + '); \n'
   })
-  output += config.hb.endString
-  fs.writeFile(config.outfile, prepareFile(output), function(err) {
+  output += app.hb.endString
+  fs.writeFile(app.outfile, prepareFile(output), function(err) {
     if(err) throw err
-    var msg = "Successfully compiled " + _.size(compiled) + " templates to " + config.outfile + " in " + elapsedTime
+    var msg = "[#" + iteration + ", " + new Date().toLocaleTimeString() + "] "
+    if(compileErrors)
+      msg += scli.$$.R("[" + compileErrors + ((compileErrors > 1) ? " ERRORS" : " ERROR") + "!] ")
+
+    msg += "Compiled " + _.size(compiled) + " templates to " + app.outfile + " in " + elapsedTime
     if(skipped > 0)
       msg += ", skipping " + skipped + " that didn't change."
-    scli.success(msg)
+
+    if(compileErrors)
+      scli.error(msg)
+    else
+      scli.success(msg)
+
+    // Handle all our variables and whatnot
+    iteration++
+
   })
 }
 
