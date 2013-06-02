@@ -21,7 +21,7 @@
   "license": "MIT",
   "readmeFilename": "readme.md",
   "dependencies": {
-    "handlebars": "*",
+    "handlebars": ">=1.0.12",
     "optimist": "*",
     "supercli": "*",
     "underscore": "*",
