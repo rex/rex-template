@@ -1,4 +1,6 @@
-#!/usr/bin/env node 
+#!/usr/bin/env node
+
+console.log("This is a new change")
 
 var optimist = require('optimist')
   , handlebars = require('handlebars')
@@ -94,10 +96,10 @@ if(argv.help) {
 
 if(argv.version) {
   scli.$.blue("Rex-Template Version Tree: ")
-  scli.$.blue("\t Rex-Template: \t [ " + scli.$$.r( app.version ) + " ]")
-  scli.$.blue("\t Handlebars: \t [ " + scli.$$.r( handlebars.VERSION ) + " ]")
-  scli.$.blue("\t Node.js: \t [ " + scli.$$.r( process.versions.node ) + " ]")
-  scli.$.blue("\t V8 (Engine): \t [ " + scli.$$.r( process.versions.v8 ) + " ]")
+  scli.$.blue("\t "+ scli.$$.g("Rex-Template:")+" \t [ " + scli.$$.r( app.version ) + " ]")
+  scli.$.blue("\t "+ scli.$$.g("Handlebars:")+" \t [ " + scli.$$.r( handlebars.VERSION ) + " ]")
+  scli.$.blue("\t "+ scli.$$.g("Node.js:")+" \t [ " + scli.$$.r( process.versions.node ) + " ]")
+  scli.$.blue("\t "+ scli.$$.g("V8 (Engine):")+" \t [ " + scli.$$.r( process.versions.v8 ) + " ]")
   process.exit(0) 
 }
 
