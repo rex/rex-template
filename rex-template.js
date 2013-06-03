@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-console.log("This is a new change")
-
 var optimist = require('optimist')
   , handlebars = require('handlebars')
   , fs = require('fs')
