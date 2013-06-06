@@ -49,7 +49,7 @@ var optimist = require('optimist')
     .boolean('w')
 
     .alias('v', 'version')
-    .describe('v', 'Display the current version number.')
+    .describe('v', 'Display the version tree')
     .boolean('v')
 
     .alias('q', 'quiet')
@@ -76,16 +76,20 @@ scli.config.appName("Rex-Template")
 if(app.quiet)
   scli.config.hideName()
 
+// ↳   ⌦ ╰ ━
+
 if(argv.help) {
-  scli.$.BLUE("Hi, I'm Rex-Template. I'm here to make your life easier.")
-  scli.$.blue("  What is this? " + scli.$$.y(__cfg__.description) )
-  scli.$.blue("  I'm stuck and need help. " + scli.$$.y(__cfg__.author))
-  scli.$.blue("  GitHub repo? " + scli.$$.y(__cfg__.homepage))
+  scli.$.red("╭ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ╮")
+  scli.$.red("⌦  Hi, I'm Rex-Template. I'm here to make your life easier. ⌫ ")
+  scli.$.red("╰ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ╯\r\n")
+  scli.$.blue("  What is this? \r\n\t╰ " + scli.$$.y(__cfg__.description) )
+  scli.$.blue("  I'm stuck and need help. \r\n\t╰ " + scli.$$.y(__cfg__.author))
+  scli.$.blue("  GitHub repo? \r\n\t╰ " + scli.$$.y(__cfg__.homepage))
   scli.$.blue("  Command what?")
-  scli.$.GREEN("     rex-template \t" + scli.$$.y(" - Compiles ./public/js/templates into ./public/js/templates.js."))
-  scli.$.GREEN("     rex-template -w \t" + scli.$$.y(" - Compiles the folder of templates and and watches the folder for changes."))
-  scli.$.GREEN("     rex-template -q \t" + scli.$$.y(" - Compiles the folder of templates and reduces the text logged to the console."))
-  scli.$.GREEN("     rex-template -i './other/templates/folder/' -o './js/folder/templates.js' -wq \t" + scli.$$.y(" - Changes the input/output paths, reduces console logging, and watches for changes."))
+  scli.$.GREEN("     rex-template  \r\n\t╰ " + scli.$$.y("Compiles ./public/js/templates into ./public/js/templates.js."))
+  scli.$.GREEN("     rex-template -w  \r\n\t╰ " + scli.$$.y("Compiles the folder of templates and and watches the folder for changes."))
+  scli.$.GREEN("     rex-template  \r\n\t╰ " + scli.$$.y("Compiles the folder of templates and reduces the text logged to the console."))
+  scli.$.GREEN("     rex-template -i './other/templates/folder/' -o './js/folder/templates.js' -wq  \r\n\t╰ " + scli.$$.y("Changes the input/output paths, reduces console logging, and watches for changes."))
    
 
   console.log(optimist.help())
