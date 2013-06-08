@@ -4,7 +4,7 @@ var optimist = require('optimist')
   , handlebars = require('handlebars')
   , fs = require('fs')
   , path = require('path')
-  , scli = require('supercli')
+  , cli = require('rex-shell')
   , _ = require('underscore')._
   , watch = require('node-watch')
   , async = require('async')
@@ -12,7 +12,7 @@ var optimist = require('optimist')
   , Miyagi = new EventEmitter()
   , __cfg__ = require('./package.json')
   , __version__ = require('./package.json').version
-  , app = require('./package.json').app
+  , app = require('./package.json').config
   , compiled = {}
   , count = 0
   , remaining = 0
@@ -72,24 +72,24 @@ _.extend(app, {
   quiet : argv.quiet
 })
   
-scli.config.appName("Rex-Template")
+cli.config.appName("Rex-Template")
 if(app.quiet)
-  scli.config.hideName()
+  cli.config.hideName()
 
 // ↳   ⌦ ╰ ━
 
 if(argv.help) {
-  scli.$.red("╭ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ╮")
-  scli.$.red("⌦  Hi, I'm Rex-Template. I'm here to make your life easier. ⌫ ")
-  scli.$.red("╰ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ╯\r\n")
-  scli.$.blue("  What is this? \r\n\t╰ " + scli.$$.y(__cfg__.description) )
-  scli.$.blue("  I'm stuck and need help. \r\n\t╰ " + scli.$$.y(__cfg__.author))
-  scli.$.blue("  GitHub repo? \r\n\t╰ " + scli.$$.y(__cfg__.homepage))
-  scli.$.blue("  Command what?")
-  scli.$.GREEN("     rex-template  \r\n\t╰ " + scli.$$.y("Compiles ./public/js/templates into ./public/js/templates.js."))
-  scli.$.GREEN("     rex-template -w  \r\n\t╰ " + scli.$$.y("Compiles the folder of templates and and watches the folder for changes."))
-  scli.$.GREEN("     rex-template  \r\n\t╰ " + scli.$$.y("Compiles the folder of templates and reduces the text logged to the console."))
-  scli.$.GREEN("     rex-template -i './other/templates/folder/' -o './js/folder/templates.js' -wq  \r\n\t╰ " + scli.$$.y("Changes the input/output paths, reduces console logging, and watches for changes."))
+  cli.$.red("╭ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ╮")
+  cli.$.red("⌦  Hi, I'm Rex-Template. I'm here to make your life easier. ⌫ ")
+  cli.$.red("╰ ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ ╯\r\n")
+  cli.$.blue("  What is this? \r\n\t╰ " + cli.$$.y(__cfg__.description) )
+  cli.$.blue("  I'm stuck and need help. \r\n\t╰ " + cli.$$.y(__cfg__.author))
+  cli.$.blue("  GitHub repo? \r\n\t╰ " + cli.$$.y(__cfg__.homepage))
+  cli.$.blue("  Command what?")
+  cli.$.GREEN("     rex-template  \r\n\t╰ " + cli.$$.y("Compiles ./public/js/templates into ./public/js/templates.js."))
+  cli.$.GREEN("     rex-template -w  \r\n\t╰ " + cli.$$.y("Compiles the folder of templates and and watches the folder for changes."))
+  cli.$.GREEN("     rex-template  \r\n\t╰ " + cli.$$.y("Compiles the folder of templates and reduces the text logged to the console."))
+  cli.$.GREEN("     rex-template -i './other/templates/folder/' -o './js/folder/templates.js' -wq  \r\n\t╰ " + cli.$$.y("Changes the input/output paths, reduces console logging, and watches for changes."))
    
 
   console.log(optimist.help())
@@ -97,16 +97,16 @@ if(argv.help) {
 }
 
 if(argv.version) {
-  scli.$.blue("Rex-Template Version Tree: ")
-  scli.$.blue("\t "+ scli.$$.g("Rex-Template:")+" \t [ " + scli.$$.r( app.version ) + " ]")
-  scli.$.blue("\t "+ scli.$$.g("Handlebars:")+" \t [ " + scli.$$.r( handlebars.VERSION ) + " ]")
-  scli.$.blue("\t "+ scli.$$.g("Node.js:")+" \t [ " + scli.$$.r( process.versions.node ) + " ]")
-  scli.$.blue("\t "+ scli.$$.g("V8 (Engine):")+" \t [ " + scli.$$.r( process.versions.v8 ) + " ]")
+  cli.$.blue("Rex-Template Version Tree: ")
+  cli.$.blue("\t "+ cli.$$.g("Rex-Template:")+" \t [ " + cli.$$.r( app.version ) + " ]")
+  cli.$.blue("\t "+ cli.$$.g("Handlebars:")+" \t [ " + cli.$$.r( handlebars.VERSION ) + " ]")
+  cli.$.blue("\t "+ cli.$$.g("Node.js:")+" \t [ " + cli.$$.r( process.versions.node ) + " ]")
+  cli.$.blue("\t "+ cli.$$.g("V8 (Engine):")+" \t [ " + cli.$$.r( process.versions.v8 ) + " ]")
   process.exit(0) 
 }
 
 var error = function appError(err, line) {
-  scli.error(err, line)
+  cli.error(err, line)
 }
 
 var preProcessCheck = function() {
@@ -117,7 +117,7 @@ var preProcessCheck = function() {
     lastCompileTime = newTime
     run()
   } else {
-    scli.error("Duplicate compile detected! Difference of " + parseFloat( ( newTime - lastCompileTime ) / 1000) + " seconds")
+    cli.error("Duplicate compile detected! Difference of " + parseFloat( ( newTime - lastCompileTime ) / 1000) + " seconds")
     return false
   }
 }
@@ -140,7 +140,7 @@ var precompile = function(data) {
     else
       return handlebars.precompile( data, {})
   } catch(err) {
-    scli.error(err);
+    cli.error(err);
     compileErrors++
     return "";
   }
@@ -195,7 +195,7 @@ var prepareFile = function signFile(output) {
 
 var init = function appInit() {
   if(!fs.existsSync( path.resolve(app.infile) ) ) {
-    scli.error("Input folder '" + app.infile + "' does not exist!")
+    cli.error("Input folder '" + app.infile + "' does not exist!")
     process.exit(1)
   }
 
@@ -217,7 +217,7 @@ var run = function RexCompiler() {
 
 Miyagi.once('app:watch', function() {
   watch(app.infile, function(file) {
-    scli("File change detected: " + file)
+    cli("File change detected: " + file)
     preProcessCheck()
   })
 })
@@ -287,16 +287,16 @@ var appCleanup = function appCleanup() {
     if(err) throw err
     var msg = "[#" + iteration + ", " + new Date().toLocaleTimeString() + "] "
     if(compileErrors)
-      msg += scli.$$.R("[" + compileErrors + ((compileErrors > 1) ? " ERRORS" : " ERROR") + "!] ")
+      msg += cli.$$.R("[" + compileErrors + ((compileErrors > 1) ? " ERRORS" : " ERROR") + "!] ")
 
     msg += "Compiled " + _.size(compiled) + " templates to " + app.outfile + " in " + elapsedTime
     if(skipped > 0)
       msg += ", skipping " + skipped + " that didn't change."
 
     if(compileErrors)
-      scli.error(msg)
+      cli.error(msg)
     else
-      scli.success(msg)
+      cli.success(msg)
 
     // Handle all our variables and whatnot
     iteration++

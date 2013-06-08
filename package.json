@@ -3,7 +3,7 @@
   "name": "rex-template",
   "description": "Rex-Template recursively compiles all of the Handlebars templates in a folder into a single file, watching for changes afterward.",
   "homepage": "https://github.com/rex/rex-template",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "main": "./rex-template.js",
   "bin": "./rex-template.js",
   "repository": {
@@ -23,12 +23,12 @@
   "dependencies": {
     "handlebars": ">=1.0.12",
     "optimist": "*",
-    "supercli": "*",
+    "rex-shell": "*",
     "underscore": "*",
     "async": "*",
     "node-watch": "*"
   },
-  "app": {
+  "config": {
     "infile": "./public/js/templates",
     "outfile": "./public/js/templates.js",
     "extensions": [
