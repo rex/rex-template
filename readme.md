@@ -14,6 +14,68 @@ No, Seriously. WTF is this?
 ---
 Rex-Template ***recursively*** compiles all of the Handlebars templates in a folder into a single file, watching for changes afterward.
 
+How do I use the templates once they're compiled?
+---
+Rex-Template compiles the templates it finds into a namespaced extension of the `Handlebars.templates` object, **without** the file extension (`.hb`,`.hbs`,`.handlebars`, etc)
+
+####Take for example:
+
+**Folder Structure** (> is Folder, - is file)
+````
+> BaseProjectFolder
+  > protected
+  > public
+    > images
+    > css
+    > js
+      > libs
+      > templates
+        - home.hb
+        > user
+          - avatar.hb
+          - settings.hb
+        > dashboard
+          > graphs
+            - tallGraph.hb
+            - shortGraph.hb
+          > feed
+            - entry.hb
+          - main.hb
+        > navigation
+          - bar.hb
+          - menuLeft.hb
+          - menuRight.hb
+````
+
+Now, simply navigate to the BaseProjectFolder and run `rex-template` on the command line. 
+You should now have the following templates, ready to use in your code:
+
+* `Handlebars.templates['home']`
+* `Handlebars.templates['user/avatar']`
+* `Handlebars.templates['user/settings']`
+* `Handlebars.templates['dashboard/graphs/tallGraph']`
+* `Handlebars.templates['dashboard/graphs/shortGraph']`
+* `Handlebars.templates['dashboard/feed/entry']`
+* `Handlebars.templates['dashboard/main']`
+* `Handlebars.templates['navigation/bar']`
+* `Handlebars.templates['navigation/menuLeft']`
+* `Handlebars.templates['navigation/menuRight']`
+
+How do I use them in my code?
+---
+Exactly the way that I listed above. Instead of doing this:
+
+````
+var template = Handlebars.compile( $("#someElement").html() )
+$("#anotherElement").html( template({ name : "Blah", age : "BlahBlah" }) )
+```
+
+You would instead do this:
+
+````
+$("#anotherElement").html( Handlebars.templates['some/template']({ name : "Blah", age : "BlahBlah" }) )
+````
+
 I'm stuck and need help.
 ---
 Email me. **Pierce Moore <me@prex.io>**
