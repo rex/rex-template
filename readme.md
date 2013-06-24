@@ -68,14 +68,12 @@ Exactly the way that I listed above. Instead of doing this:
 ````
 var template = Handlebars.compile( $("#someElement").html() )
 $("#anotherElement").html( template({ name : "Blah", age : "BlahBlah" }) )  
-
 ````
 
 You would instead do this:
 
 ````
 $("#anotherElement").html( Handlebars.templates['some/template']({ name : "Blah", age : "BlahBlah" }) )  
-
 ````
 
 I'm stuck and need help.
@@ -96,7 +94,6 @@ Rex-Template Version Tree:
   Handlebars:    [ 1.0.0 ]  
   Node.js:       [ 0.10.9 ]  
   V8 (Engine):   [ 3.14.5.9 ]  
-
 ````
 
 How do I use this thing?
