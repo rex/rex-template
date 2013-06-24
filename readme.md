@@ -67,13 +67,15 @@ Exactly the way that I listed above. Instead of doing this:
 
 ````
 var template = Handlebars.compile( $("#someElement").html() )
-$("#anotherElement").html( template({ name : "Blah", age : "BlahBlah" }) )
+$("#anotherElement").html( template({ name : "Blah", age : "BlahBlah" }) )  
+
 ```
 
 You would instead do this:
 
 ````
-$("#anotherElement").html( Handlebars.templates['some/template']({ name : "Blah", age : "BlahBlah" }) )
+$("#anotherElement").html( Handlebars.templates['some/template']({ name : "Blah", age : "BlahBlah" }) )  
+
 ````
 
 I'm stuck and need help.
@@ -89,11 +91,12 @@ I heard a rumor you do a cool nerdy trick with versions...
 Sure do. Run Rex-Template with the `-v` flag and you will see your version of Rex-Template, Handlebars, Node, and the V8 Engine.
 
 ````
-Rex-Template Version Tree:
-  Rex-Template:  [ 1.1.5 ]
-  Handlebars:    [ 1.0.0 ]
-  Node.js:       [ 0.10.9 ]
-  V8 (Engine):   [ 3.14.5.9 ]
+Rex-Template Version Tree:  
+  Rex-Template:  [ 1.1.5 ]  
+  Handlebars:    [ 1.0.0 ]  
+  Node.js:       [ 0.10.9 ]  
+  V8 (Engine):   [ 3.14.5.9 ]  
+
 ````
 
 How do I use this thing?
@@ -131,3 +134,4 @@ Flag    | What it does  |  Default Value
   -q, --quiet |   Reduce console output        |   [boolean]  [default: false]
 
 Have fun, kids!
+---
