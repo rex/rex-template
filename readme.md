@@ -69,7 +69,7 @@ Exactly the way that I listed above. Instead of doing this:
 var template = Handlebars.compile( $("#someElement").html() )
 $("#anotherElement").html( template({ name : "Blah", age : "BlahBlah" }) )  
 
-```
+````
 
 You would instead do this:
 
