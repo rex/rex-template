@@ -4,8 +4,11 @@
   "description": "Rex-Template recursively compiles all of the Handlebars templates in a folder into a single file, watching for changes afterward.",
   "homepage": "https://github.com/rex/rex-template",
   "version": "1.1.75",
-  "main": "./rex-template.js",
-  "bin": "./rex-template.js",
+  "main": "./lib/rex-template.js",
+  "bin": {
+    "rex-template" : "./bin/rex-kickstart",
+    "rextemplate" : "./bin/rex-kickstart"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/rex/rex-template.git"
@@ -19,26 +22,68 @@
     "monitor",
     "rex"
   ],
+  "bugs": {
+    "url": "https://github.com/rex/rex-template/issues"
+  },
+  "scripts": {
+    "test": "node ./test/rex-template.test.js"
+  },
+  "preferGlobal": true,
   "license": "MIT",
   "readmeFilename": "readme.md",
+  "directories" : {
+    "lib" : "./lib",
+    "bin" : "./bin",
+    "test" : "./test"
+  },
   "dependencies": {
     "handlebars": ">=1.0.12",
-    "optimist": "*",
     "rex-shell": "*",
-    "underscore": "*",
+    "rex-exec" : "*",
+    "rex-utils" : "*",
+    "optimist" : "*",
     "async": "*",
     "node-watch": "*"
   },
   "config": {
-    "infile": "./public/js/templates",
-    "outfile": "./public/js/templates.js",
+    "cli" : {
+      "usage": "rex-template [-i /path/to/templates] [-o /path/to/templates.js] [-w] [-q]",
+      "args" : {
+        "in" : {
+          "aliases" : ["-i","--in"],
+          "description" : "Path to the directory of templates, from the current directory.",
+          "default" : "./public/js/templates",
+          "type" : "param"
+        },
+        "out" : {
+          "aliases" : ["-o","--out"],
+          "description" : "Path to the compiled templates output file, from the current directory.",
+          "default" : "./public/js/templates.js",
+          "type" : "param"
+        },
+        "watch" : {
+          "aliases" : ["-w","--watch"],
+          "description" : "Keep alive and watch for changes to templates in the template directory.",
+          "default" : false,
+          "type" : "flag"
+        },
+        "quiet" : {
+          "aliases" : ["-q","--quiet"],
+          "description" : "Reduce console logging and output.",
+          "default" : false,
+          "type" : "flag"
+        }
+      }
+    },
     "extensions": [
       ".hb",
       ".hbs",
-      ".handlebars"
+      ".handlebars",
+      ".tpl",
+      ".template",
+      ".mustache",
+      ".mst"
     ],
-    "minify": true,
-    "watch": false,
     "timeout": 1000,
     "hb": {
       "startString": "(function() { var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {}; Handlebars.partials = Handlebars.templates; \n",
