@@ -135,6 +135,11 @@ class Rex
 			cli.$.GREEN "  rex-template -q \r\n\t #{cli.$$.y("Compiles the folder of templates and reduces the text logged to the console.")}"
 			cli.$.GREEN "  rex-template -s './other/templates/folder/' -d './js/folder/templates.js' -w -q \r\n\t #{cli.$$.y("Changes the input/output paths, reduces console logging, and watches for changes.")}"
 
+		if argv.version or _.contains argv._, 'version'
+			_.displayVersion pkg, {
+				Handlebars : @HB.VERSION
+			}
+
 		# log "CLI App Settings: ", app, argv
 		this
 
