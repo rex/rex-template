@@ -49,19 +49,19 @@
     "cli": {
       "usage": "rex-template [-i /path/to/templates] [-o /path/to/templates.js] [-w] [-q]",
       "args": {
-        "in": {
+        "source": {
           "aliases": [
-            "-i",
-            "--in"
+            "-s",
+            "--source"
           ],
           "description": "Path to the directory of templates, from the current directory.",
           "default": "./public/js/templates",
           "type": "param"
         },
-        "out": {
+        "dest": {
           "aliases": [
-            "-o",
-            "--out"
+            "-d",
+            "--dest"
           ],
           "description": "Path to the compiled templates output file, from the current directory.",
           "default": "./public/js/templates.js",
@@ -97,30 +97,8 @@
       ".mst"
     ],
     "timeout": 1000,
-    "hb": {
-      "startString": "(function() { var template = Handlebars.template, templates = Handlebars.templates = Handlebars.templates || {}; Handlebars.partials = Handlebars.templates; \n",
-      "endString": "})();"
-    },
-    "tplHeader": [
-      "/**",
-      "* Compiled by Rex-Template on {{date}}",
-      "*",
-      "* Total Compiles : {{iteration}}",
-      "* Templates : {{templateCount}}",
-      "* Compile Time : {{compileTime}}",
-      "* Skipped Templates: {{skipped}}",
-      "* Compile Errors: {{compileErrors}}",
-      "* Compile Time Rex-Template has Saved You: {{timeSaved}} seconds",
-      "*",
-      "* About Rex-Template:",
-      "* \t Version : {{version}}",
-      "* \t Input File : {{infile}}",
-      "* \t Output File : {{outfile}}",
-      "* \t Extensions Handled : {{extensions}}",
-      "* \t Duplicate Prevention Timeout : {{timeout}}",
-      "*",
-      "* Having issues? Send an email to me@prex.io or open an issue here: https://github.com/rex/rex-template/issues",
-      "*/ \n"
-    ]
+    "source": "./public/js/templates/",
+    "dest": "./public/js/templates.js",
+    "cache": true
   }
 }

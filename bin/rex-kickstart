@@ -37,4 +37,4 @@
 #######*/
 var name = require('../package.json').name
 
-require('../lib/'+ name).init()
+require('../dist/'+ name).init()

@@ -38,5 +38,17 @@ var cli = require('rex-shell')
   , utils = require('rex-utils')
   , _ = require('rex-utils')._
   , rextpl = require('../lib/rex-template.js')
+  , path = require('path')
+  , fs = require('fs')
+  , Handlebars = require('handlebars')
 
-rextpl.init("~/Zngine/zngine-pr/public/js/templates/", "~/Zngine/zngine-pr/public/js/templates.js")
+rextpl.on('complete', function() {
+  var compiled = rextpl.use( path.join( __dirname, 'output.js') )
+  console.log("Top Level #1", compiled['toplevel_one']({ path : 'toplevel_one' }) )
+  console.log("Top Level #2", compiled['toplevel_two']({ path : 'toplevel_two' }) )
+  console.log("Sub Level #1", compiled['sub/sublevel_one']({ path : 'sub/sublevel_one' }) )
+  console.log("Sub Level #2", compiled['sub/sublevel_two']({ path : 'sub/sublevel_two' }) )
+  console.log("Sub Sub Level #1", compiled['sub/sub/subsublevel_one']({ path : 'sub/sub/subsublevel_one' }) )
+})
+
+rextpl.init( path.join( __dirname, "tpl" ), path.join( __dirname, "output.js" ) )
