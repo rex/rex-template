@@ -132,6 +132,7 @@
       _.defaults(argv, app);
       if (app.quiet || _.contains(argv._, 'quiet')) {
         cli.config.hideName();
+        process.exit(0);
       }
       if (argv.help || _.contains(argv._, 'help')) {
         _.showAdvancedHelp(pkg);
@@ -143,11 +144,13 @@
         cli.$.GREEN("  rex-template -w \r\n\t " + (cli.$$.y('Compiles the folder of templates and and watches the folder for changes.')));
         cli.$.GREEN("  rex-template -q \r\n\t " + (cli.$$.y("Compiles the folder of templates and reduces the text logged to the console.")));
         cli.$.GREEN("  rex-template -s './other/templates/folder/' -d './js/folder/templates.js' -w -q \r\n\t " + (cli.$$.y("Changes the input/output paths, reduces console logging, and watches for changes.")));
+        process.exit(0);
       }
       if (argv.version || _.contains(argv._, 'version')) {
         _.displayVersion(pkg, {
           Handlebars: this.HB.VERSION
         });
+        process.exit(0);
       }
       return this;
     };
@@ -181,6 +184,10 @@
       } else {
         return "";
       }
+    };
+
+    Rex.prototype.addWorkers = function(num) {
+      return this.remaining = this.remaining + num;
     };
 
     Rex.prototype.reset = function() {};

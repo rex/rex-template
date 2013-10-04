@@ -123,7 +123,9 @@ class Rex
 		app.version = pkg.version
 		_.defaults argv, app
 
-		if app.quiet or _.contains argv._, 'quiet' then cli.config.hideName()
+		if app.quiet or _.contains argv._, 'quiet'
+			cli.config.hideName() 
+			process.exit 0
 		if argv.help or _.contains argv._, 'help'
 			_.showAdvancedHelp(pkg)
 			cli.$.blue "What is this? #{cli.$$.y(pkg.description)}"
@@ -134,11 +136,13 @@ class Rex
 			cli.$.GREEN "  rex-template -w \r\n\t #{cli.$$.y('Compiles the folder of templates and and watches the folder for changes.')}"
 			cli.$.GREEN "  rex-template -q \r\n\t #{cli.$$.y("Compiles the folder of templates and reduces the text logged to the console.")}"
 			cli.$.GREEN "  rex-template -s './other/templates/folder/' -d './js/folder/templates.js' -w -q \r\n\t #{cli.$$.y("Changes the input/output paths, reduces console logging, and watches for changes.")}"
+			process.exit 0
 
 		if argv.version or _.contains argv._, 'version'
 			_.displayVersion pkg, {
 				Handlebars : @HB.VERSION
 			}
+			process.exit 0
 
 		# log "CLI App Settings: ", app, argv
 		this
@@ -163,6 +167,9 @@ class Rex
 
 	precompile : (html) ->
 		if html then @HB.precompile html, {} else ""
+
+	addWorkers : (num) ->
+		@remaining = @remaining + num
 
 	reset : () ->
 
