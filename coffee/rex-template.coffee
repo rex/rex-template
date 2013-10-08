@@ -42,8 +42,17 @@ class Rex
 		log "Constructing new Rex App"
 		unless Params then Params = {}
 
+		@times =
+			start : @start
+			stop : @stop
+
+		Object.defineProperties @times,
+			elapsed:
+				get: () ->
+					return "#{( @stop - @start ) / 1000} seconds"
+
+
 		@settings = _.extend pkg.config, Params, { version : pkg.version }
-		@times = {}
 		@counts = 
 			iteration : 1
 		@paths =
@@ -87,14 +96,20 @@ class Rex
 		else
 			throw "Template not found: #{filePath} at #{fullPath}"
 
+	hasErrors : () ->
+		return false
+		#return @errors.length > 0
+
 	error : (message) ->
 		@errors.push "Error: #{message}"
 		this 
 
 	die : () ->
-		cli.error "Rex-Template errors: (#{@errors.length} \n"
+		cli.error "Rex-Template errors: (#{@errors.length}) \n"
 		_.each @errors, (err) ->
-			cli.$.red "> #{err}"
+			cli.$.red "> #{cli.$$.b(err)}"
+
+		log "\nUsage Information: \n"
 
 		_.showAdvancedHelp pkg
 		process.exit 1
@@ -121,11 +136,12 @@ class Rex
 
 	bootCLI : () ->
 		app.version = pkg.version
-		_.defaults argv, app
+		_.extend app, argv
 
 		if app.quiet or _.contains argv._, 'quiet'
 			cli.config.hideName() 
 			process.exit 0
+
 		if argv.help or _.contains argv._, 'help'
 			_.showAdvancedHelp(pkg)
 			cli.$.blue "What is this? #{cli.$$.y(pkg.description)}"
@@ -144,8 +160,9 @@ class Rex
 			}
 			process.exit 0
 
-		# log "CLI App Settings: ", app, argv
-		this
+		log "CLI App Settings: ", app, argv
+
+		@run()
 
 	run : _.debounce () ->
 			console.time "Rex-Template Compile"
@@ -168,8 +185,13 @@ class Rex
 	precompile : (html) ->
 		if html then @HB.precompile html, {} else ""
 
-	addWorkers : (num) ->
-		@remaining = @remaining + num
+	workers : 
+		add : (num) ->
+			unless num then num = 1
+			@remaining = @remaining + num
+		done : () ->
+			@remaining--
+			@Miyagi.emit 'app:cleanup' if @remaining is -1
 
 	reset : () ->
 
@@ -197,14 +219,11 @@ class Rex
 module.exports = 
 	init : (Params) ->
 		App = new Rex Params
-		App.bootCLI()
+		if App.hasErrors() then App.die() else App.bootCLI()
 
 	rex : Rex
 	Rex : Rex
 	version : pkg.version
-	pkg : pkg
-
-	something : (thing) ->
-		console.log "Thing: #{thing}"
+	package : pkg
 
 

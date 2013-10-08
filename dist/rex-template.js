@@ -34,10 +34,27 @@
       if (!Params) {
         Params = {};
       }
+      this.times = {};
+      Object.defineProperties(this.times, {
+        start: {
+          get: function() {
+            return this.start;
+          }
+        },
+        stop: {
+          get: function() {
+            return this.stop;
+          }
+        },
+        elapsed: {
+          get: function() {
+            return "" + ((this.stop - this.start) / 1000) + " seconds";
+          }
+        }
+      });
       this.settings = _.extend(pkg.config, Params, {
         version: pkg.version
       });
-      this.times = {};
       this.counts = {
         iteration: 1
       };
@@ -88,16 +105,21 @@
       }
     };
 
+    Rex.prototype.hasErrors = function() {
+      return false;
+    };
+
     Rex.prototype.error = function(message) {
       this.errors.push("Error: " + message);
       return this;
     };
 
     Rex.prototype.die = function() {
-      cli.error("Rex-Template errors: (" + this.errors.length + " \n");
+      cli.error("Rex-Template errors: (" + this.errors.length + ") \n");
       _.each(this.errors, function(err) {
-        return cli.$.red("> " + err);
+        return cli.$.red("> " + (cli.$$.b(err)));
       });
+      log("\nUsage Information: \n");
       _.showAdvancedHelp(pkg);
       return process.exit(1);
     };
@@ -129,7 +151,7 @@
 
     Rex.prototype.bootCLI = function() {
       app.version = pkg.version;
-      _.defaults(argv, app);
+      _.extend(app, argv);
       if (app.quiet || _.contains(argv._, 'quiet')) {
         cli.config.hideName();
         process.exit(0);
@@ -152,7 +174,8 @@
         });
         process.exit(0);
       }
-      return this;
+      log("CLI App Settings: ", app, argv);
+      return this.run();
     };
 
     Rex.prototype.run = _.debounce(function() {
@@ -186,8 +209,19 @@
       }
     };
 
-    Rex.prototype.addWorkers = function(num) {
-      return this.remaining = this.remaining + num;
+    Rex.prototype.workers = {
+      add: function(num) {
+        if (!num) {
+          num = 1;
+        }
+        return this.remaining = this.remaining + num;
+      },
+      done: function() {
+        this.remaining--;
+        if (this.remaining === -1) {
+          return this.Miyagi.emit('app:cleanup');
+        }
+      }
     };
 
     Rex.prototype.reset = function() {};
@@ -221,15 +255,16 @@
     init: function(Params) {
       var App;
       App = new Rex(Params);
-      return App.bootCLI();
+      if (App.hasErrors()) {
+        return App.die();
+      } else {
+        return App.bootCLI();
+      }
     },
     rex: Rex,
     Rex: Rex,
     version: pkg.version,
-    pkg: pkg,
-    something: function(thing) {
-      return console.log("Thing: " + thing);
-    }
+    "package": pkg
   };
 
 }).call(this);
